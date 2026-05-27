@@ -99,10 +99,13 @@ public class NormalOctree
         _childNodes[6] = new NormalOctree(halfWidth, _center + new Vec3(-quarterWidth, quarterWidth, quarterWidth));
         _childNodes[7] = new NormalOctree(halfWidth, _center + new Vec3(quarterWidth, quarterWidth, quarterWidth));
 
-        // add each point to the appropriate bucket
+        // add each point directly to the appropriate child bucket — no need to re-validate or re-check split threshold
         foreach ((Vec3 v, int idx) in _points!)
         {
-            PickChildNodeForAdd(v).AddToSet(v, idx);
+            NormalOctree child = PickChildNodeForAdd(v);
+            child._minEdge = Vec3.Min(child._minEdge, v);
+            child._maxEdge = Vec3.Max(child._maxEdge, v);
+            child._points!.Add((v, idx));
         }
 
         // null out points

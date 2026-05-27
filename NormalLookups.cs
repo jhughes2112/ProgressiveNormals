@@ -1,23 +1,17 @@
 ﻿using Vec3 = System.Numerics.Vector3;
+using ProgressiveNormals;
 
 public class NormalLookups
 {
-    private NormalOctree _normalTree128 = new NormalOctree(2.1f, new Vec3(0, 0, 0));
-    private NormalOctree _normalTree32768 = new NormalOctree(2.1f, new Vec3(0, 0, 0));
+    private SpatialLookup _normalTree128;
+    private SpatialLookup _normalTree32768;
 
     public NormalLookups()
     {
-        for (int i = 0; i < 128; i++)
-        {
-            _normalTree128.AddToSet(NormalTableData.GetNormalByIndex(i), i);
-        }
-        for (int i = 0; i < 32768; i++)
-        {
-            _normalTree32768.AddToSet(NormalTableData.GetNormalByIndex(i), i);
-        }
+        _normalTree128 = NormalTableData.BuildTree128();
+        _normalTree32768 = NormalTableData.BuildTree32768();
     }
 
-    // This either returns an index <= 127 or an index <= 32767.
     public int FindClosestVec3(Vec3 normal, float precision)
     {
         float distSq = float.MaxValue;
